@@ -31,7 +31,7 @@ function PinnedShowcase() {
   const chapter = PRODUCT_CHAPTERS[active]
 
   return (
-    <div ref={trackRef} className="relative mt-20" style={{ height: `${PRODUCT_CHAPTERS.length * 80}vh` }}>
+    <div ref={trackRef} className="relative mt-6" style={{ height: `${PRODUCT_CHAPTERS.length * 80}vh` }}>
       <div className="sticky top-0 flex h-screen items-center">
         <div className="container-x grid w-full grid-cols-12 items-center gap-10">
           {/* Copy column */}
@@ -81,7 +81,7 @@ function PinnedShowcase() {
             <div className="relative">
               <div aria-hidden className="pointer-events-none absolute inset-8 rounded-[50%] bg-volt/[0.09] blur-[100px]" />
               <div className="relative aspect-[16/10]" data-cursor="Explore">
-                <AppWindow highlight={chapter.id} />
+                <AppWindow highlight={chapter.id} live />
               </div>
 
               {/* Metrics read out of the highlighted region */}
@@ -118,7 +118,7 @@ function PinnedShowcase() {
  */
 function StackedShowcase() {
   return (
-    <div className="container-x mt-14 flex flex-col gap-4">
+    <div className="container-x mt-10 flex flex-col gap-3">
       {PRODUCT_CHAPTERS.map((c) => (
         <motion.article
           key={c.id}
@@ -161,7 +161,7 @@ export function ProductShowcase() {
   const isDesktop = useIsDesktop()
 
   return (
-    <Section id="product" aria-labelledby="product-heading">
+    <Section id="product" space="wide" aria-labelledby="product-heading">
       <GridBackdrop size={80} opacity={0.045} />
       <LightBeam className="-right-60 top-20" size="52rem" color="rgba(199,240,72,0.08)" />
 
@@ -171,8 +171,9 @@ export function ProductShowcase() {
           eyebrow="The platform"
           lines={['EVERYTHING YOUR GYM NEEDS.', 'ONE INTELLIGENT PLATFORM.']}
           accentLine={1}
+          treatment="outline"
+          layout="split"
           body="Five surfaces, one system of record. Nothing is re-entered, nothing is reconciled by hand, and nothing lives in a file on somebody's desktop."
-          className="max-w-5xl"
         />
       </div>
 

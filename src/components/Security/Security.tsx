@@ -22,7 +22,7 @@ export function Security() {
   const reduced = useReducedMotion()
 
   return (
-    <Section id="security" aria-labelledby="security-heading" space="sm" className="border-y border-line bg-ink/40">
+    <Section id="security" aria-labelledby="security-heading" space="band" className="border-y border-line bg-ink/40">
       <div className="container-x">
         <div className="grid gap-12 lg:grid-cols-[1fr_1.15fr] lg:gap-16">
           <div>
@@ -31,6 +31,7 @@ export function Security() {
               eyebrow="Security & data"
               lines={['YOUR MEMBERS', 'TRUSTED YOU FIRST.']}
               accentLine={1}
+              treatment="outline"
               body="Their phone numbers, their payments, their fingerprints. Here is exactly what happens to a record after it leaves the front desk."
               size="md"
             />

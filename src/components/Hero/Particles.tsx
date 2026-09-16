@@ -25,7 +25,11 @@ export function Particles({ className, count = 42, color = '199,240,72' }: Props
     let h = 0
     let raf = 0
     let running = true
-    const dpr = Math.min(window.devicePixelRatio || 1, 2)
+    // Deliberately 1×, not devicePixelRatio. These are soft sub-2px dots on a
+    // near-black ground — at 2× the backing store quadruples and clearing it
+    // every frame was, by measurement, the single most expensive thing on the
+    // page. At 1× it is indistinguishable and four times cheaper.
+    const dpr = 1
 
     type Mote = { x: number; y: number; r: number; vx: number; vy: number; a: number; warm: boolean }
     let motes: Mote[] = []

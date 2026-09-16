@@ -31,7 +31,7 @@ export function AISection() {
   const turnDelay = (i: number) => 0.3 + i * 0.75
 
   return (
-    <Section id="ai" aria-labelledby="ai-heading">
+    <Section id="ai" space="wide" aria-labelledby="ai-heading">
       <GridBackdrop size={72} opacity={0.05} />
       <LightBeam className="left-1/2 top-0 -translate-x-1/2" size="60rem" color="rgba(199,240,72,0.09)" />
       <LightBeam className="-right-52 bottom-0" size="40rem" color="rgba(107,124,255,0.09)" />
@@ -42,12 +42,13 @@ export function AISection() {
           eyebrow="KINETIQ Intelligence"
           lines={['YOUR GYM DATA.', 'NOW THINKING FOR YOU.']}
           accentLine={1}
+          treatment="outline"
+          layout="center"
           body="Every check-in, payment and missed session is a signal. KINETIQ reads them together and tells you what is about to happen — while there is still time to change it."
-          align="center"
           className="mx-auto max-w-4xl"
         />
 
-        <div className="mt-16 grid gap-8 lg:mt-20 lg:grid-cols-[1.35fr_1fr] lg:gap-10">
+        <div className="mt-14 grid gap-8 lg:mt-16 lg:grid-cols-[1.35fr_1fr] lg:gap-10">
           {/* ---- Conversation ---- */}
           <motion.div
             ref={ref}
@@ -160,7 +161,7 @@ export function AISection() {
           <ul className="flex flex-col gap-3">
             {AI_CAPABILITIES.map((c, i) => (
               <Reveal key={c.title} delay={i * 0.08} distance={20} speed="product" as="li">
-                <div className="group relative h-full overflow-hidden rounded-2xl border border-line bg-carbon p-5 transition-colors duration-500 hover:border-line-strong md:p-6">
+                <div className="group relative h-full overflow-hidden rounded-2xl border border-line bg-carbon p-5 transition-[transform,border-color,box-shadow] duration-500 ease-[cubic-bezier(0.22,1,0.36,1)] hover:-translate-y-0.5 hover:border-line-strong hover:shadow-[0_22px_50px_-28px_rgba(0,0,0,0.9)] md:p-6">
                   <span className="pointer-events-none absolute inset-x-6 top-0 h-px bg-gradient-to-r from-transparent via-white/14 to-transparent" />
                   <div className="flex items-baseline gap-3">
                     <span className="font-mono text-[0.625rem] text-volt/70">{String(i + 1).padStart(2, '0')}</span>

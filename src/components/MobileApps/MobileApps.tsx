@@ -32,7 +32,7 @@ export function MobileApps() {
   const lift = useTransform(scrollYProgress, [0, 1], [50, -50])
 
   return (
-    <Section id="apps" aria-labelledby="apps-heading">
+    <Section id="apps" space="base" aria-labelledby="apps-heading">
       <LightBeam className="left-1/2 top-10 -translate-x-1/2" size="58rem" color="rgba(199,240,72,0.08)" />
 
       <div className="container-x">
@@ -41,12 +41,12 @@ export function MobileApps() {
           eyebrow="Mobile"
           lines={['YOUR GYM,', 'IN THREE POCKETS.']}
           accentLine={1}
+          treatment="light"
+          layout="split"
           body="Members book and pay. Trainers run their roster. You watch the business. One system of record behind all three, so nothing is ever entered twice."
-          align="center"
-          className="mx-auto max-w-4xl"
         />
 
-        <div ref={ref} className="relative mt-16 lg:mt-20">
+        <div ref={ref} className="relative mt-14 lg:mt-16">
           {/* ---- Desktop: a shallow fan ---- */}
           <motion.div
             className="relative mx-auto hidden max-w-4xl items-end justify-center gap-6 lg:flex"

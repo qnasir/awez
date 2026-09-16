@@ -131,14 +131,14 @@ export function Row({
   }[tone]
 
   return (
-    <li className="flex items-center gap-2.5 border-b border-line/60 py-[0.4rem] last:border-b-0">
+    <div className="flex items-center gap-2.5 border-b border-line/60 py-[0.4rem] last:border-b-0">
       <span className={cn('h-1.5 w-1.5 shrink-0 rounded-full', dot)} aria-hidden />
       <span className="min-w-0 flex-1">
         <span className="block truncate text-[0.6875rem] font-medium text-chalk">{name}</span>
         <span className="block truncate text-[0.5625rem] text-mute md:text-[0.625rem]">{meta}</span>
       </span>
       {right && <span className="shrink-0 font-mono text-[0.625rem] tabular-nums text-ash">{right}</span>}
-    </li>
+    </div>
   )
 }
 

@@ -57,7 +57,7 @@ read it through `useReducedMotion()` and render a fully-composed state. Notably:
 the marquees become static wrapping lists instead of frozen belts, counters
 render their final value immediately, and GSAP is never loaded at all.
 
-### Two gotchas worth knowing
+### Three gotchas worth knowing
 
 1. **A MotionValue in `style` silently overrides the same key in `animate`.**
    Where an element needs both an entrance and a live scroll/pointer transform,
@@ -66,6 +66,11 @@ render their final value immediately, and GSAP is never loaded at all.
 2. **`useScroll({ target })` measures against the nearest positioned ancestor.**
    Scroll targets and their containers carry `position: relative` (including
    `html` and `main`) so offsets are exact.
+3. **A canvas is priced by its area, not by what is drawn on it.** The hero's
+   24 barely-visible dust motes were, by measurement, the single most expensive
+   thing on the page: the canvas spans the full hero, and clearing it at 2× DPR
+   every frame halved the frame rate. It renders at 1× now — indistinguishable
+   for sub-2px dots, four times cheaper.
 
 ## Architecture
 
@@ -76,7 +81,8 @@ src/
     primitives/   Button, Panel, Reveal, SplitHeadline, Marquee, Counter,
                   Section, Spotlight, GridBackdrop, SectionHeader
       charts/     hand-rolled SVG charts (see below)
-    Dashboard/    AppWindow — the product, shared by hero + showcase
+    Dashboard/    AppWindow + useLiveFeed — the product, shared by hero + showcase
+    Statement/    the full-bleed rhythm break between chapters
     <Section>/    one folder per page chapter
   hooks/          media queries, pointer field, scroll progress, measure,
                   count-up, hash scroll, reduced motion
@@ -88,10 +94,17 @@ src/
 `content.ts` is the single source of copy and data. The voice is auditable in
 one file, and no component invents its own numbers.
 
-`AppWindow` is one component used by the hero, the sticky showcase and the
-feature sections, so the software looks like the same software everywhere it
-appears. It is `aria-hidden` decorative imagery — every number it shows is also
-stated in real text or in an accessible chart elsewhere on the page.
+`AppWindow` is one component used by the hero and the sticky showcase, so the
+software looks like the same software everywhere it appears. It is
+`aria-hidden` decorative imagery — every number it shows is also stated in real
+text or in an accessible chart elsewhere on the page.
+
+**It does not freeze.** `useLiveFeed` trickles new check-ins into the window and
+creeps the day's totals up behind them; the hero's `LiveRail` streams floor
+activity beside the headline. A dashboard that counts up once on entry and then
+stops is a screenshot with an animation on it, and the "Live" pill next to it is
+a lie. Both stop on tab-hide and on scroll-out, and neither runs under reduced
+motion.
 
 ## Charts
 
@@ -153,11 +166,15 @@ Chrome, production build:
 
 | | |
 |---|---|
-| First paint / FCP | 152 ms / 764 ms *(4× CPU throttle)* |
+| First paint / FCP | 108 ms / 636 ms *(4× CPU throttle)* |
 | Long tasks during load | 0 |
-| Scroll, full page, 6× CPU throttle @ 390px | median 16.7 ms, p99 33.4 ms, no frame > 50 ms |
+| Continuous scroll, full page, **2× DPR**, 4× CPU @ 1440px | median 16.7 ms, **p90 16.7 ms**, 5–10 frames over 33 ms of 425 |
+| Continuous scroll, full page, **2× DPR**, 6× CPU @ 390px | median 16.7 ms, **p90 16.7 ms**, 9–13 frames over 33 ms of 458 |
 | Horizontal overflow | none at 320 → 1920 px |
 | Console errors / warnings | none |
+
+Frame timings are measured by scrolling the whole page at ~55px per frame and
+recording every frame interval — not by sampling a still viewport.
 
 ## Accessibility
 

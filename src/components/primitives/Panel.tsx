@@ -43,7 +43,10 @@ export function Panel({ children, className, interactive = true, as: Tag = 'div'
       className={cn(
         'group relative overflow-hidden rounded-2xl border border-line',
         'bg-[linear-gradient(180deg,rgba(255,255,255,0.035),rgba(255,255,255,0.006)_42%,transparent)] bg-carbon',
-        'transition-colors duration-500',
+        // A 2px lift and a cast shadow: the card leaves the page rather than
+        // merely changing colour, which is what makes a hover feel physical.
+        'transition-[transform,border-color,box-shadow] duration-500 ease-[cubic-bezier(0.22,1,0.36,1)]',
+        active && 'hover:-translate-y-0.5 hover:border-line-strong hover:shadow-[0_22px_50px_-28px_rgba(0,0,0,0.9)]',
         className,
       )}
     >

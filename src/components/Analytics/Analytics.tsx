@@ -28,7 +28,7 @@ const SPARKS: Record<string, number[]> = {
  */
 export function Analytics() {
   return (
-    <Section id="resources" aria-labelledby="analytics-heading">
+    <Section id="resources" space="wide" aria-labelledby="analytics-heading">
       <GridBackdrop size={88} opacity={0.04} />
 
       <div className="container-x">
@@ -37,12 +37,12 @@ export function Analytics() {
           eyebrow="Analytics"
           lines={['YOUR GYM HAS DATA.', 'WE TURN IT INTO DECISIONS.']}
           accentLine={1}
+          layout="split"
           body="Not a report you export and forget. The six numbers that decide the month, on one board, updated as the floor moves."
-          className="max-w-5xl"
         />
 
         {/* ---- KPI row ---- */}
-        <ul className="mt-14 grid grid-cols-2 gap-3 md:mt-16 lg:grid-cols-3">
+        <ul className="mt-12 grid grid-cols-2 gap-3 lg:grid-cols-3">
           {KPIS.map((kpi, i) => {
             const good = kpi.id === 'renewals' || kpi.id === 'pending' ? kpi.trend === 'down' : kpi.trend === 'up'
             return (

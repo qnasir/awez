@@ -15,6 +15,7 @@ import { MobileMenu } from './MobileMenu'
  * signalling "you have left the top" without ever competing with the hero.
  */
 export function Navbar() {
+  const [hovered, setHovered] = useState<string | null>(null)
   const scrolled = useScrolledPast(40)
   const active = useActiveSection(SECTION_IDS)
   const progress = useDocumentProgress()
@@ -68,20 +69,32 @@ export function Navbar() {
             <Logo />
           </a>
 
-          <ul className="absolute left-1/2 hidden -translate-x-1/2 items-center gap-1 lg:flex">
+          <ul
+            className="absolute left-1/2 hidden -translate-x-1/2 items-center gap-1 lg:flex"
+            onMouseLeave={() => setHovered(null)}
+          >
             {NAV.map((item) => {
               const isActive = active === item.href.slice(1)
               return (
                 <li key={item.label}>
                   <a
                     href={item.href}
+                    onMouseEnter={() => setHovered(item.label)}
                     className={cn(
-                      'group relative block rounded-full px-3.5 py-2 text-[0.8125rem] font-medium transition-colors duration-300',
+                      'relative block rounded-full px-3.5 py-2 text-[0.8125rem] font-medium transition-colors duration-300',
                       isActive ? 'text-chalk' : 'text-ash hover:text-chalk',
                     )}
                   >
-                    {item.label}
-                    {/* The underline slides between items rather than fading in place */}
+                    {/* The hover surface slides between items rather than
+                        fading in place — the pointer feels tracked, not polled. */}
+                    {hovered === item.label && (
+                      <motion.span
+                        layoutId="nav-hover"
+                        className="absolute inset-0 -z-10 rounded-full bg-white/[0.06]"
+                        transition={{ type: 'spring', stiffness: 500, damping: 38 }}
+                      />
+                    )}
+                    <span className="relative">{item.label}</span>
                     {isActive && (
                       <motion.span
                         layoutId="nav-underline"
@@ -89,7 +102,6 @@ export function Navbar() {
                         transition={{ type: 'spring', stiffness: 420, damping: 34 }}
                       />
                     )}
-                    <span className="absolute inset-x-3.5 -bottom-0.5 h-px origin-left scale-x-0 bg-line-strong transition-transform duration-300 group-hover:scale-x-100" />
                   </a>
                 </li>
               )

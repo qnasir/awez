@@ -71,17 +71,6 @@ export function barPath(x: number, y: number, w: number, h: number, r: number = 
           L ${x + w} ${y + h} Z`
 }
 
-/** Same, rotated for horizontal bars: rounded right end, square at the axis. */
-export function hBarPath(x: number, y: number, w: number, h: number, r: number = MARK.radius): string {
-  const rr = Math.min(r, h / 2, Math.max(w, 0))
-  if (w <= 0) return ''
-  return `M ${x} ${y}
-          L ${x + w - rr} ${y}
-          Q ${x + w} ${y} ${x + w} ${y + rr}
-          L ${x + w} ${y + h - rr}
-          Q ${x + w} ${y + h} ${x + w - rr} ${y + h}
-          L ${x} ${y + h} Z`
-}
 
 /**
  * Clean axis ticks — rounded to a readable step, never raw data values.

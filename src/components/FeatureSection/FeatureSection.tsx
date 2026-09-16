@@ -49,8 +49,9 @@ function Story({ story, index }: { story: FeatureStory; index: number }) {
         <SplitHeadline
           lines={story.title}
           accentLine={1}
+          size="d3"
           delay={0.06}
-          className="mt-5 text-d3 font-extrabold text-gradient"
+          className="mt-5 font-extrabold text-gradient"
         />
 
         <Reveal delay={0.16} distance={18} speed="product">
@@ -108,7 +109,7 @@ function Story({ story, index }: { story: FeatureStory; index: number }) {
 
 export function FeatureSection() {
   return (
-    <Section id="features" aria-labelledby="features-heading">
+    <Section id="features" space="base" aria-labelledby="features-heading">
       <GridBackdrop size={96} opacity={0.04} />
       <LightBeam className="-left-72 top-1/3" size="56rem" color="rgba(199,240,72,0.07)" />
 
@@ -118,18 +119,18 @@ export function FeatureSection() {
           eyebrow="Built for the work"
           lines={['LESS ADMIN.', 'MORE GROWTH.']}
           accentLine={1}
+          layout="split"
           body="Each of these replaces something you are currently doing by hand, in a spreadsheet, or from memory."
-          className="max-w-5xl"
         />
 
-        <div className="mt-20 flex flex-col gap-28 md:mt-28 md:gap-36 lg:gap-44">
+        <div className="mt-16 flex flex-col gap-24 md:mt-20 md:gap-32 lg:gap-40">
           {FEATURE_STORIES.map((story, i) => (
             <Story key={story.id} story={story} index={i} />
           ))}
         </div>
 
         {/* ---- The complete index, as an editorial table rather than more cards ---- */}
-        <div className="mt-28 border-t border-line pt-14 md:mt-36">
+        <div className="mt-24 border-t border-line pt-14 md:mt-28">
           <Reveal distance={14} speed="detail">
             <div className="flex flex-wrap items-baseline justify-between gap-4">
               <h3 className="font-display text-xl font-bold tracking-tight text-chalk md:text-2xl">
@@ -147,12 +148,14 @@ export function FeatureSection() {
                   <dd>
                     <ul className="mt-3 flex flex-col gap-2">
                       {group.items.map((item) => (
-                        <li
-                          key={item}
-                          className="group/item flex items-center gap-2 text-[0.875rem] text-ash transition-colors hover:text-chalk"
-                        >
-                          <span className="h-px w-2.5 bg-dim transition-all duration-300 group-hover/item:w-4 group-hover/item:bg-volt" />
-                          {item}
+                        <li key={item}>
+                          {/* The rule extends and the row steps right — the
+                              response reads as the list acknowledging the
+                              pointer, not as a colour swap. */}
+                          <span className="group/item flex cursor-default items-center gap-2.5 py-1 text-[0.875rem] text-ash transition-[color,transform] duration-300 ease-[cubic-bezier(0.22,1,0.36,1)] hover:translate-x-1 hover:text-chalk">
+                            <span className="h-px w-3 shrink-0 bg-dim transition-all duration-300 ease-[cubic-bezier(0.22,1,0.36,1)] group-hover/item:w-6 group-hover/item:bg-volt" />
+                            {item}
+                          </span>
                         </li>
                       ))}
                     </ul>

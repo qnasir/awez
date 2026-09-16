@@ -52,9 +52,11 @@ function PlanCard({ plan, yearly, index }: { plan: Plan; yearly: boolean; index:
       <article
         className={cn(
           'group relative flex h-full flex-col overflow-hidden rounded-2xl p-6 md:p-7',
+          'transition-[transform,border-color,box-shadow] duration-500 ease-[cubic-bezier(0.22,1,0.36,1)]',
+          'hover:-translate-y-1 hover:shadow-[0_28px_60px_-30px_rgba(0,0,0,0.95)]',
           featured
-            ? 'border border-volt/35 bg-[linear-gradient(180deg,rgba(199,240,72,0.07),rgba(199,240,72,0.012)_38%,transparent)] bg-carbon'
-            : 'border border-line bg-carbon transition-colors duration-500 hover:border-line-strong',
+            ? 'border border-volt/35 bg-[linear-gradient(180deg,rgba(199,240,72,0.07),rgba(199,240,72,0.012)_38%,transparent)] bg-carbon hover:border-volt/60'
+            : 'border border-line bg-carbon hover:border-line-strong',
         )}
       >
         {/* The recommended plan is marked by a travelling edge light, not a badge */}
@@ -197,7 +199,7 @@ export function Pricing() {
   const [yearly, setYearly] = useState(true)
 
   return (
-    <Section id="pricing" aria-labelledby="pricing-heading">
+    <Section id="pricing" space="base" aria-labelledby="pricing-heading">
       <GridBackdrop size={80} opacity={0.045} />
 
       <div className="container-x">
@@ -206,8 +208,8 @@ export function Pricing() {
           eyebrow="Pricing"
           lines={['PAY FOR THE FLOOR.', 'NOT PER FEATURE.']}
           accentLine={1}
+          layout="center"
           body="Every plan includes free migration, staff training and support. No setup fee, no per-seat billing, no contract on monthly plans."
-          align="center"
           className="mx-auto max-w-4xl"
         />
 

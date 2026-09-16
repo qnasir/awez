@@ -1,10 +1,11 @@
-import { useEffect, useState } from 'react'
-import { motion } from 'framer-motion'
+import { useRef } from 'react'
+import { AnimatePresence, motion } from 'framer-motion'
 import {
   LayoutDashboard, Users, CreditCard, ScanLine, Dumbbell, BarChart3,
   Search, Bell, ChevronDown, Plus, TrendingUp,
 } from 'lucide-react'
 import { Rail, Tile, PanelBlock, Row, MiniArea, MiniBars } from './parts'
+import { useLiveFeed } from './useLiveFeed'
 import { Sparkline } from '@/components/primitives/charts'
 import { REVENUE_SERIES, ATTENDANCE_HOURS, MEMBER_SERIES } from '@/lib/content'
 import { useReducedMotion } from '@/hooks/useReducedMotion'
@@ -17,13 +18,6 @@ const RAIL = [
   { id: 'attendance', icon: <ScanLine size={14} />, label: 'Attendance' },
   { id: 'trainers', icon: <Dumbbell size={14} />, label: 'Trainers' },
   { id: 'analytics', icon: <BarChart3 size={14} />, label: 'Analytics' },
-]
-
-const CHECKINS = [
-  { name: 'Aditya Rane', meta: 'Annual · 7:12 PM', tone: 'good' as const, right: 'IN' },
-  { name: 'Sneha Pillai', meta: 'Quarterly · 7:09 PM', tone: 'good' as const, right: 'IN' },
-  { name: 'Vikram Joshi', meta: 'Monthly · 7:04 PM', tone: 'good' as const, right: 'IN' },
-  { name: 'Fatima Sheikh', meta: 'Annual · 6:58 PM', tone: 'good' as const, right: 'IN' },
 ]
 
 const RENEWALS = [
@@ -50,32 +44,16 @@ type Props = {
  */
 export function AppWindow({ highlight = null, live = false, className }: Props) {
   const reduced = useReducedMotion()
+  const hostRef = useRef<HTMLDivElement>(null)
   const animate = live && !reduced
 
-  // A slow counter on the revenue tile makes the window feel connected to
-  // something, rather than frozen at a screenshot moment.
-  const [revenue, setRevenue] = useState(animate ? 0 : 842500)
-  const [checkins, setCheckins] = useState(animate ? 0 : 418)
-
-  useEffect(() => {
-    if (!animate) return
-    let raf = 0
-    const start = performance.now()
-    const tick = (now: number) => {
-      const t = Math.min(1, (now - start) / 1800)
-      const eased = 1 - Math.pow(1 - t, 4)
-      setRevenue(Math.round(842500 * eased))
-      setCheckins(Math.round(418 * eased))
-      if (t < 1) raf = requestAnimationFrame(tick)
-    }
-    raf = requestAnimationFrame(tick)
-    return () => cancelAnimationFrame(raf)
-  }, [animate])
+  const { checkIns, revenue, checkInCount } = useLiveFeed(live, hostRef)
 
   const railHighlight = highlight === 'analytics' ? 'analytics' : highlight
 
   return (
     <div
+      ref={hostRef}
       aria-hidden
       className={cn(
         'relative flex h-full w-full flex-col overflow-hidden rounded-xl border border-line-strong',
@@ -151,7 +129,7 @@ export function AppWindow({ highlight = null, live = false, className }: Props) 
               <Tile key="m" label="Active members" value="1,284" delta="▲ 4.9%">
                 <Sparkline data={MEMBER_SERIES.slice(-8)} width={46} height={20} animate={animate} delay={1.0} />
               </Tile>,
-              <Tile key="c" label="Check-ins" value={checkins.toLocaleString('en-IN')} delta="▲ 7.3%">
+              <Tile key="c" label="Check-ins" value={checkInCount.toLocaleString('en-IN')} delta="▲ 7.3%">
                 <Sparkline data={[280, 310, 296, 341, 368, 352, 394, 418]} width={46} height={20} animate={animate} delay={1.1} />
               </Tile>,
             ].map((tile, i) => (
@@ -191,16 +169,47 @@ export function AppWindow({ highlight = null, live = false, className }: Props) 
               <p className="mt-2 text-[0.5625rem] text-mute">Peak 7–8 PM · 96 in</p>
             </PanelBlock>
 
-            <PanelBlock region="attendance" highlight={highlight} title="Live check-ins">
-              <ul className="-my-0.5">
-                {CHECKINS.slice(0, 3).map((c) => <Row key={c.name} {...c} />)}
-              </ul>
+            <PanelBlock
+              region="attendance"
+              highlight={highlight}
+              title="Live check-ins"
+              action={
+                <span className="flex items-center gap-1 text-[0.5625rem] font-medium text-volt">
+                  <span className="relative flex h-1 w-1">
+                    {!reduced && (
+                      <span
+                        className="absolute inset-0 rounded-full bg-volt"
+                        style={{ animation: 'pulse-ring 2.6s cubic-bezier(0.22,1,0.36,1) infinite' }}
+                      />
+                    )}
+                    <span className="relative h-1 w-1 rounded-full bg-volt" />
+                  </span>
+                  Live
+                </span>
+              }
+            >
+              <div className="-my-0.5 overflow-hidden">
+                <AnimatePresence initial={false} mode="popLayout">
+                  {checkIns.slice(0, 3).map((c) => (
+                    <motion.div
+                      key={c.id}
+                      layout={!reduced}
+                      initial={reduced ? false : { opacity: 0, y: -18 }}
+                      animate={{ opacity: 1, y: 0 }}
+                      exit={reduced ? undefined : { opacity: 0, y: 14, transition: { duration: 0.25 } }}
+                      transition={{ duration: 0.5, ease: [0.16, 1, 0.3, 1] }}
+                    >
+                      <Row name={c.name} meta={c.meta} tone="good" right="IN" />
+                    </motion.div>
+                  ))}
+                </AnimatePresence>
+              </div>
             </PanelBlock>
 
             <PanelBlock region="memberships" highlight={highlight} title="Renewals due · 7 days">
-              <ul className="-my-0.5">
+              <div className="-my-0.5">
                 {RENEWALS.slice(0, 3).map((r) => <Row key={r.name} {...r} />)}
-              </ul>
+              </div>
             </PanelBlock>
           </div>
         </div>

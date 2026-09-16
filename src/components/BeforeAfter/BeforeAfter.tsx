@@ -95,7 +95,7 @@ export function BeforeAfter() {
   }, [dragging, setFromClientX])
 
   return (
-    <Section id="solutions" aria-labelledby="solutions-heading">
+    <Section id="solutions" space="tight" aria-labelledby="solutions-heading">
       <GridBackdrop size={80} opacity={0.045} />
 
       <div className="container-x">
@@ -104,8 +104,9 @@ export function BeforeAfter() {
           eyebrow="Before / after"
           lines={['TWO WAYS TO RUN', 'THE SAME GYM.']}
           accentLine={1}
+          treatment="light"
+          layout="split"
           body="Everything on the left is work somebody is doing by hand right now."
-          className="max-w-4xl"
         />
 
         <motion.div
@@ -113,7 +114,7 @@ export function BeforeAfter() {
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true, margin: '-12% 0px -12% 0px' }}
           transition={{ duration: 0.9, ease: [0.16, 1, 0.3, 1] }}
-          className="mt-14 md:mt-20"
+          className="mt-12 md:mt-14"
         >
           {isDesktop ? (
             <>

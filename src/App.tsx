@@ -8,6 +8,7 @@ import { LogoMarquee } from '@/components/LogoMarquee/LogoMarquee'
 import { ProductShowcase } from '@/components/ProductShowcase/ProductShowcase'
 import { FeatureSection } from '@/components/FeatureSection/FeatureSection'
 import { BeforeAfter } from '@/components/BeforeAfter/BeforeAfter'
+import { Statement } from '@/components/Statement/Statement'
 import { AISection } from '@/components/AISection/AISection'
 import { Automation } from '@/components/Automation/Automation'
 import { MobileApps } from '@/components/MobileApps/MobileApps'
@@ -44,6 +45,7 @@ export default function App() {
         <ProductShowcase />
         <FeatureSection />
         <BeforeAfter />
+        <Statement />
         <AISection />
         <Automation />
         <MobileApps />

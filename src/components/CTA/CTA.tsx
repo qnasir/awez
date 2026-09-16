@@ -30,9 +30,9 @@ export function CTA() {
   }), transparent 62%)`
 
   return (
-    <Section id="contact" ref={ref} className="overflow-hidden grain" aria-labelledby="cta-heading">
+    <Section id="contact" ref={ref} space="close" className="overflow-hidden grain" aria-labelledby="cta-heading">
       <GridBackdrop size={64} opacity={0.055} />
-      <Particles className="absolute inset-0 h-full w-full" count={34} />
+      <Particles className="absolute inset-0 h-full w-full" count={20} />
 
       {/* Floor light that grounds the block */}
       <div
@@ -55,8 +55,9 @@ export function CTA() {
             id="cta-heading"
             lines={FINAL_CTA.headline}
             accentLine={1}
+            size="d1"
             delay={0.08}
-            className="mt-6 text-d1 font-extrabold text-chalk"
+            className="mt-6 font-extrabold text-chalk"
           />
           <Reveal delay={0.2} distance={20} speed="product">
             <p className="mt-7 max-w-[42ch] text-base leading-relaxed text-ash md:text-lg">{FINAL_CTA.body}</p>

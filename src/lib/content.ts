@@ -197,7 +197,7 @@ export const FEATURE_STORIES: FeatureStory[] = [
   {
     id: 'notifications',
     eyebrow: 'Automated engagement',
-    title: ['THE FOLLOW-UP', 'THAT ALWAYS HAPPENS.'],
+    title: ['THE FOLLOW-UP', 'ALWAYS HAPPENS.'],
     body:
       'Welcome messages, dues reminders, birthday offers, streak nudges and win-backs go out on schedule, in the right channel, without anyone remembering to send them.',
     points: [

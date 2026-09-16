@@ -115,7 +115,7 @@ export function Testimonials() {
   ))
 
   return (
-    <Section aria-labelledby="testimonials-heading" className="overflow-hidden">
+    <Section space="tight" aria-labelledby="testimonials-heading" className="overflow-hidden">
       <GridBackdrop size={80} opacity={0.04} />
 
       <div className="container-x">
@@ -124,8 +124,9 @@ export function Testimonials() {
           eyebrow="Operators"
           lines={['THE PEOPLE', 'ON THE FLOOR.']}
           accentLine={1}
+          treatment="light"
+          layout="split"
           body="Owners who replaced a drawer of registers and three spreadsheets with one platform."
-          className="max-w-4xl"
         />
       </div>
 

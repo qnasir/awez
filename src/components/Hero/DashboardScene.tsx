@@ -18,9 +18,10 @@ type Props = { ready: boolean }
  * card with one media query. A Three.js plane would have given a blurrier
  * result for an order of magnitude more weight.
  *
- * Depth is built from three things: perspective on the stage, a pointer-driven
- * tilt on the slab, and per-layer translateZ so the contextual cards parallax
- * against the window at different rates.
+ * Two things make it read as a window rather than a screenshot: it is wider
+ * than the page's text container, so it breaks the measure the copy sits in;
+ * and its lower third dissolves into the page instead of ending on a border,
+ * so the fold crops the product rather than framing it.
  */
 export function DashboardScene({ ready }: Props) {
   const stageRef = useRef<HTMLDivElement>(null)
@@ -33,14 +34,14 @@ export function DashboardScene({ ready }: Props) {
 
   // Pointer tilt — deliberately small. Past ~8° the UI starts to read as a
   // photograph of a screen rather than a screen.
-  const rotateY = useTransform(x, [-0.5, 0.5], [7, -7])
-  const rotateX = useTransform(y, [-0.5, 0.5], [-5.5, 5.5])
+  const rotateY = useTransform(x, [-0.5, 0.5], [6, -6])
+  const rotateX = useTransform(y, [-0.5, 0.5], [-4.5, 4.5])
 
-  // Scroll parallax: the slab settles back and rises slightly as you leave.
-  const { scrollYProgress } = useScroll({ target: stageRef, offset: ['start 40%', 'end start'] })
-  const scrollLift = useSpring(useTransform(scrollYProgress, [0, 1], [0, -70]), { stiffness: 80, damping: 24 })
-  const scrollTilt = useTransform(scrollYProgress, [0, 1], [0, 9])
-  const scrollFade = useTransform(scrollYProgress, [0, 0.85], [1, 0.25])
+  // Scroll camera: the slab recedes and lifts as you leave the hero.
+  const { scrollYProgress } = useScroll({ target: stageRef, offset: ['start 65%', 'end start'] })
+  const scrollLift = useSpring(useTransform(scrollYProgress, [0, 1], [0, -90]), { stiffness: 80, damping: 24 })
+  const scrollTilt = useTransform(scrollYProgress, [0, 1], [0, 10])
+  const scrollScale = useTransform(scrollYProgress, [0, 1], [1, 0.94])
 
   const cards = [
     {
@@ -48,7 +49,7 @@ export function DashboardScene({ ready }: Props) {
       icon: <UserPlus size={13} />,
       title: 'New member',
       body: 'Sneha P. · Annual plan',
-      pos: 'left-0 top-[38%] md:-left-4 lg:-left-6',
+      pos: '-left-2 top-[30%] lg:-left-6',
       depth: 90,
       delay: 0.5,
     },
@@ -57,7 +58,7 @@ export function DashboardScene({ ready }: Props) {
       icon: <IndianRupee size={13} />,
       title: 'Payment received',
       body: '₹4,500 · UPI autopay',
-      pos: 'right-0 -top-4 md:-right-2 lg:-right-6',
+      pos: '-right-2 -top-5 lg:-right-6',
       depth: 130,
       delay: 0.72,
     },
@@ -66,7 +67,7 @@ export function DashboardScene({ ready }: Props) {
       icon: <ShieldCheck size={13} />,
       title: '23 likely to renew',
       body: 'Campaign queued',
-      pos: 'right-0 -bottom-5 md:-right-4 lg:-right-8',
+      pos: '-right-2 top-[42%] lg:-right-7',
       depth: 70,
       delay: 0.94,
     },
@@ -75,7 +76,7 @@ export function DashboardScene({ ready }: Props) {
       icon: <Activity size={13} />,
       title: '418 check-ins',
       body: 'Live · peak 7–8 PM',
-      pos: 'left-0 bottom-[6%] md:-left-2 lg:-left-6',
+      pos: '-left-2 -top-4 lg:-left-5',
       depth: 110,
       delay: 1.12,
     },
@@ -84,44 +85,54 @@ export function DashboardScene({ ready }: Props) {
   return (
     <div
       ref={stageRef}
-      className="relative mx-auto w-full max-w-[74rem]"
-      style={{ perspective: interactive ? 1800 : undefined }}
+      // Wider than `container-x`: the product deliberately breaks the measure
+      // the copy is set in, which is what makes it read as a separate plane.
+      className="relative mx-auto w-full max-w-[88rem] px-4 md:px-8 lg:px-10"
+      style={{ perspective: interactive ? 1900 : undefined }}
       data-cursor="Explore"
     >
       {/* Light pooling beneath the slab, so it reads as sitting in space */}
       <div
         aria-hidden
-        className="pointer-events-none absolute left-1/2 top-1/2 h-[70%] w-[85%] -translate-x-1/2 -translate-y-1/2 rounded-[50%] bg-volt/[0.11] blur-[110px]"
+        className="pointer-events-none absolute left-1/2 top-[38%] h-[52%] w-[86%] -translate-x-1/2 -translate-y-1/2 rounded-[50%] bg-volt/[0.12] blur-[120px]"
       />
 
       {/*
         Three nested layers, deliberately. A MotionValue in `style` takes
-        precedence over the same key in `animate`, so mixing the entrance
-        (opacity / z / rotateX) with the live pointer and scroll transforms on
-        one element silently drops the entrance. Each layer owns one job:
-          1. entrance from depth   2. scroll parallax   3. pointer tilt
+        precedence over the same key in `animate`, so mixing the entrance with
+        the live pointer and scroll transforms on one element silently drops
+        the entrance. Each layer owns one job:
+          1. entrance from depth   2. scroll camera   3. pointer tilt
       */}
       <motion.div
-        initial={reduced ? false : { opacity: 0, z: -520, rotateX: 26, y: 80 }}
+        initial={reduced ? false : { opacity: 0, z: -560, rotateX: 24, y: 90 }}
         animate={ready ? { opacity: 1, z: 0, rotateX: 0, y: 0 } : undefined}
-        transition={{ duration: 1.5, delay: 0.35, ease: [0.16, 1, 0.3, 1] }}
+        transition={{ duration: 1.6, delay: 0.4, ease: [0.16, 1, 0.3, 1] }}
         style={interactive ? { transformStyle: 'preserve-3d' } : undefined}
       >
         <motion.div
           style={
             interactive
-              ? { y: scrollLift, opacity: scrollFade, rotateX: scrollTilt, transformStyle: 'preserve-3d' }
-              : { y: scrollLift, opacity: scrollFade }
+              ? { y: scrollLift, scale: scrollScale, rotateX: scrollTilt, transformStyle: 'preserve-3d' }
+              : { y: scrollLift, scale: scrollScale }
           }
         >
           <motion.div
+            className="relative"
             style={interactive ? { rotateX, rotateY, transformStyle: 'preserve-3d' } : undefined}
           >
             <div
-              className="relative mx-auto aspect-[16/11] w-full sm:aspect-[16/10] lg:aspect-[16/9] lg:w-[92%]"
+              className="relative aspect-[16/11] w-full sm:aspect-[16/10] lg:aspect-[16/8.5]"
               style={interactive ? { transform: 'translateZ(0px)' } : undefined}
             >
               <AppWindow live={ready} />
+
+              {/* The fold crops the product: its lower third dissolves into the
+                  page instead of ending on a border. */}
+              <div
+                aria-hidden
+                className="pointer-events-none absolute inset-x-0 bottom-0 h-[42%] bg-gradient-to-b from-transparent via-void/70 to-void"
+              />
             </div>
 
             {/* Floating context cards, each at its own depth */}
@@ -132,7 +143,7 @@ export function DashboardScene({ ready }: Props) {
                 style={interactive ? { transform: `translateZ(${c.depth}px)` } : undefined}
                 initial={reduced ? false : { opacity: 0, y: 18, scale: 0.94 }}
                 animate={ready ? { opacity: 1, y: 0, scale: 1 } : undefined}
-                transition={{ duration: 0.8, delay: 1.1 + c.delay, ease: [0.16, 1, 0.3, 1] }}
+                transition={{ duration: 0.8, delay: 1.2 + c.delay, ease: [0.16, 1, 0.3, 1] }}
               >
                 <motion.div
                   animate={reduced ? undefined : { y: [0, -7, 0] }}

@@ -47,7 +47,7 @@
   --font-mono: "Geist Mono", ui-monospace, "SF Mono", Menlo, monospace;
 
   /* ---- Fluid display scale ---- */
-  --text-d1: clamp(2.75rem, 8.2vw, 8.5rem);
+  --text-d1: clamp(2.375rem, 8.2vw, 8.5rem);
   --text-d1--line-height: 0.88;
   --text-d1--letter-spacing: -0.045em;
   --text-d2: clamp(2rem, 4.4vw, 4rem);
@@ -180,8 +180,7 @@
     position: absolute;
     inset: 0;
     pointer-events: none;
-    opacity: 0.035;
-    mix-blend-mode: overlay;
+    opacity: 0.022;
     background-image: var(--grain-url);
     background-size: 180px 180px;
   }
