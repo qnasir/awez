@@ -1,0 +1,13 @@
+{
+  "name": "KINETIQ — Gym Management Platform",
+  "short_name": "KINETIQ",
+  "description": "The intelligent operating system for modern gyms.",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#050507",
+  "theme_color": "#050507",
+  "icons": [
+    { "src": "/favicon.svg", "sizes": "any", "type": "image/svg+xml", "purpose": "any" },
+    { "src": "/mark-180.png", "sizes": "180x180", "type": "image/png" }
+  ]
+}
