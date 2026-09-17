@@ -3,7 +3,7 @@ import { useHashScroll } from '@/hooks/useHashScroll'
 import { Preloader } from '@/components/Preloader/Preloader'
 import { Cursor } from '@/components/Cursor/Cursor'
 import { Navbar } from '@/components/Navbar/Navbar'
-import { Hero } from '@/components/Hero/Hero'
+import { HeroExperience } from '@/components/Hero3D/HeroExperience'
 import { LogoMarquee } from '@/components/LogoMarquee/LogoMarquee'
 import { ProductShowcase } from '@/components/ProductShowcase/ProductShowcase'
 import { FeatureSection } from '@/components/FeatureSection/FeatureSection'
@@ -40,7 +40,7 @@ export default function App() {
       <Navbar />
 
       <main id="main" className="relative">
-        <Hero ready={ready} />
+        <HeroExperience ready={ready} />
         <LogoMarquee />
         <ProductShowcase />
         <FeatureSection />

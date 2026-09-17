@@ -28,12 +28,22 @@ export const SECTION_IDS = NAV.map((n) => n.href.slice(1))
 
 export const HERO = {
   eyebrow: 'Gym management, rebuilt',
-  headline: ['RUN YOUR GYM.', 'LIKE A BUSINESS.'],
+  headline: ['RUN YOUR GYM.', 'LIKE A MACHINE.'],
   sub:
-    'KINETIQ replaces the registers, the reminders and the guesswork. Memberships, payments, attendance, trainers, leads and renewals — one platform that runs the admin so you can run the floor.',
+    'Memberships. Payments. Attendance. Trainers. Renewals. One intelligent operating system for your entire gym.',
   primaryCta: 'Book a Demo',
   secondaryCta: 'Explore Platform',
   footnote: 'No card required · Live in 48 hours · Free data migration',
+} as const
+
+/** Captions the camera hands off to as it travels the room. */
+export const HERO_BEATS = {
+  wide: { index: '01', label: 'The floor', line: 'Every rep, every rupee, every check-in. All of it is data.' },
+  approach: { index: '02', label: 'The command centre', line: 'One surface for the entire operation.' },
+  members: { index: '03', label: 'Members', line: '1,284 active. Every plan, freeze and renewal on one record.' },
+  revenue: { index: '04', label: 'Revenue', line: '₹8,42,500 this month — collected, reconciled and forecast.' },
+  attendance: { index: '05', label: 'Attendance', line: '847 check-ins today. 87.4% of who should have been here.' },
+  digital: { index: '06', label: 'The operating system', line: 'The gym runs. KINETIQ runs the gym.' },
 } as const
 
 /** Marquee of fictional fitness businesses used as social proof. */

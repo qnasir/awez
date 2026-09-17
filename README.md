@@ -13,6 +13,108 @@ npm run lint     # typecheck only
 
 ---
 
+## The hero is a WebGL scene
+
+The hero is a cinematic gym rendered in Three.js: a dark room you travel down,
+with the KINETIQ command centre floating at the far end. Scroll drives a camera
+through six beats — the floor, the command centre, members, revenue,
+attendance, and the room dissolving into its own data — and the physical gym
+turns to schematic wireframe as it goes. Every object earns its place: the
+machines are the physical business, the command centre is the digital one, and
+the particles flowing down the aisle toward it are members becoming data.
+
+```
+Hero3D/
+  HeroExperience   the hero section: sticky canvas, copy, beat captions
+  GymScene         the <Canvas>, quality budget, visibility pausing
+  SceneDriver      the one place shared values advance (pointer, clock, digital)
+  HeroCamera       two splines — position and look-at — plus pointer parallax
+  Environment      shell, floor, ceiling strips, light rig, figures
+  GymEquipment     merged machine geometry + the schematic overlay
+  CommandCenter    the rig: dashboard, four metric panels, visualisations
+  Dashboard3D      layered panel, KPI tiles, counting numbers
+  FloatingMetric   one KPI panel, with hover opening the layer beneath it
+  ParticleSystem   members flowing toward the command centre
+  visualizations/  revenue columns, attendance ring, member constellation
+  useRoomEnvironment  procedural PMREM env map
+  useSceneCapability  who gets the scene, and how much of it
+  geometry / panelGeometry / sceneConfig / sceneState / fonts
+```
+
+### What it costs, and who pays it
+
+**108 draw calls, ~22k triangles, 14 programs, 2 textures.** Every machine is
+authored as a dozen primitives and then *merged into one BufferGeometry*, so
+the room costs roughly one draw call per machine rather than one per strut.
+The revenue columns and the member constellation are `InstancedMesh`.
+
+**Nobody pays for it unless they can use it.** `useSceneCapability` probes for
+a real context — not a UA string — and refuses the scene on reduced motion, on
+a missing or blocklisted WebGL implementation, and on a GPU whose max texture
+size says it is a software rasteriser. Those visitors fetch **zero** 3D bytes:
+verified by watching the network, not by reading the code.
+
+That gating is easy to get wrong in two places, and both were:
+
+1. **Vite preloads the dependencies of every dynamic import it can see**, so
+   the 267 KB bundle was being handed to everyone before the probe had run.
+   `build.modulePreload.resolveDependencies` filters it out.
+2. **Vite's preload helper is a virtual module**, and Rollup allocated it into
+   the 3D chunk — which gave the entry a *static* import of the whole bundle.
+   It is now pinned to an eager chunk by name.
+
+**Rendering stops when the canvas leaves the viewport or the tab is hidden**
+(`frameloop` toggles to `never`). Measured: ~8 rAF/s with the scene on screen
+under software rendering, 30 rAF/s once scrolled past — the rest of the page
+runs as if the hero were not there.
+
+Quality steps down by tier (`sceneConfig.ts`): bays, ceiling strips, particle
+counts, the schematic overlay, antialiasing and the DPR clamp all come from one
+budget object, so a slow device is stepped down without touching scene code.
+
+### Three things that make it read as a product render, not a demo
+
+- **A procedural environment map.** Metal is nothing but reflections; with
+  nothing to reflect, high-metalness materials render almost black and the
+  machines look like flat cut-outs. A 64×32 gradient canvas with a bright band
+  where the ceiling strips are, run through PMREM, gives every surface a
+  horizon and a highlight — for a few kilobytes instead of a 4 MB HDRI.
+- **The accent is never a room light.** Volt appears as emissive surface and as
+  one tight pool around the command centre. Lighting a whole room in the brand
+  colour is the fastest way to look like a demo.
+- **The figures have `envMapIntensity: 0`.** The moment a person catches a
+  specular highlight they stop being a silhouette and start being a mannequin.
+
+### Text in 3D
+
+Panel type is real SDF text (troika via drei's `Text`), not a texture, so it
+stays crisp at any camera distance. The fonts are the site's own — Archivo and
+Inter, self-hosted and **subset to the ~90 glyphs the scene draws**: 650 KB of
+full families becomes 40 KB. Counting numbers are throttled to 12fps, because
+troika re-tessellates glyphs on every string change.
+
+### Fallback
+
+No WebGL, or reduced motion, and the hero falls back to the previous 2.5D
+version — the CSS-3D product window with its live activity rail. It is a
+designed hero in its own right, not a placeholder.
+
+### Mobile
+
+Phones get a different composition, not a squeezed one: the canvas is a
+**window across the top** rather than a full-bleed backdrop, the copy sits
+below it on solid ground, and the camera journey starts already inside the room
+and runs over 220vh instead of 360vh. A portrait frame cannot compose a room
+behind a block of copy — the interesting half always ends up under the
+headline.
+
+### One interaction bug worth remembering
+
+The hero copy sits over the canvas. Once it faded out on scroll it was still
+intercepting the pointer, so the 3D panels behind it could never be hovered.
+The copy layer is `pointer-events: none` with only its links and buttons taking
+events back, and it drops out entirely past 15% scroll.
+
 ## The design system
 
 Everything visual derives from tokens in `src/styles/index.css`. Change them
@@ -146,6 +248,9 @@ pointers rather than firing pointless listeners.
 
 ## Third-party weight
 
+- **three / @react-three/fiber / drei** — the hero scene. **Dynamically
+  imported**, ~267 KB gzip, and fetched only by devices that pass the
+  capability probe.
 - **framer-motion** — the motion system, used throughout.
 - **GSAP + ScrollTrigger** — only for the pinned horizontal testimonials, where
   its pin-spacer maths, resize recalculation and scrub inertia genuinely beat a
@@ -153,12 +258,11 @@ pointers rather than firing pointless listeners.
   loads for desktop visitors who reach that section and never for anyone else.
 - **lucide-react** — icons, tree-shaken.
 
-**No Three.js.** The hero "3D dashboard" is CSS 3D over real DOM: the UI stays
-vector-sharp at every density, costs no shader or texture budget, remains
-inspectable, and degrades to a flat card with one media query. A WebGL plane
-would have looked blurrier for an order of magnitude more weight.
+The **fallback** hero is still CSS 3D over real DOM — sharp at any density, no
+shader budget, and it degrades with one media query.
 
-Initial load is ~147 KB gzip (JS + CSS) across 10 requests.
+Initial load is ~152 KB gzip (JS + CSS). The 3D bundle is additional and
+conditional; it is never part of first load.
 
 ## Measured
 
@@ -171,10 +275,20 @@ Chrome, production build:
 | Continuous scroll, full page, **2× DPR**, 4× CPU @ 1440px | median 16.7 ms, **p90 16.7 ms**, 5–10 frames over 33 ms of 425 |
 | Continuous scroll, full page, **2× DPR**, 6× CPU @ 390px | median 16.7 ms, **p90 16.7 ms**, 9–13 frames over 33 ms of 458 |
 | Horizontal overflow | none at 320 → 1920 px |
-| Console errors / warnings | none |
+| Console errors / warnings | none, with and without the 3D scene |
+| 3D scene cost | 108 draw calls · 22k triangles · 2 textures |
+| 3D bytes on reduced-motion / no-WebGL | **0** |
 
 Frame timings are measured by scrolling the whole page at ~55px per frame and
 recording every frame interval — not by sampling a still viewport.
+
+**The WebGL scene's frame rate is not measured here.** The only browser
+available in this environment rasterises WebGL in software, where the scene
+runs at roughly 8fps — a number that says nothing about real hardware. What is
+verified is everything hardware-independent: the draw-call and triangle budget,
+that rendering stops when the canvas is off screen, that the bundle is never
+delivered to devices that cannot use it, and that the rest of the page is
+unaffected either way.
 
 ## Accessibility
 
@@ -190,6 +304,9 @@ element. All text passes WCAG AA against every surface it sits on.
 
 - `?skipintro` skips the loading sequence — useful for automated capture and
   for jumping straight to a section during QA.
+- In dev, `window.__kinetiqScene()` returns the live renderer budget — draw
+  calls, triangles, programs, DPR, and the currently hovered panel. Stripped
+  from production builds.
 - The loader's completion gates the hero's entrance, with a 2.2 s failsafe in
   `App.tsx`: content is never allowed to depend on an animation callback firing.
 - `useHashScroll` re-runs the anchor jump after mount, because a client-rendered
